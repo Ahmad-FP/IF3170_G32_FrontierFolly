@@ -1,0 +1,29 @@
+{
+  "A": {
+    "id": "A",
+    "dimensions": [3, 4, 1],
+    "orientation": [0, 1, 2],
+    "value": 60,
+    "weight": 5,
+    "is_fragile": false,
+    "eta": 3
+  },
+  "B": {
+    "id": "B",
+    "dimensions": [4, 5, 2],
+    "orientation": [0, 1, 2],
+    "value": 100,
+    "weight": 10,
+    "is_fragile": true,
+    "eta": 2
+  },
+  "C": {
+    "id": "C",
+    "dimensions": [2, 4, 1],
+    "orientation": [0, 1, 2],
+    "value": 80,
+    "weight": 4,
+    "is_fragile": false,
+    "eta": 4
+  }
+}
