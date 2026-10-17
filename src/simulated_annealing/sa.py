@@ -5,10 +5,10 @@ import json
 import random
 from pathlib import Path
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from constraint import state_valid
 from initial_state import gen_initial_state, possible_height
+from visual import plotState, plotValues
 
 def initState(packages, truck):
     state = gen_initial_state(packages, truck)
@@ -98,38 +98,6 @@ def Run(packages, truck, TStart=250, cooling=0.9999, Tmin=10, t=40000, seed=None
         "valuesOT": values, "probs": probs, "stuck": stuck
     }
 
-def ngotakin(x, y, z, w, l, h):
-    c = [(x + i * w, y + j * l, z + k * h) for i in (0, 1) for j in (0, 1) for k in (0, 1)]
-    return [[c[0], c[1], c[3], c[2]], [c[4], c[5], c[7], c[6]],
-            [c[0], c[1], c[5], c[4]], [c[2], c[3], c[7], c[6]],
-            [c[0], c[2], c[6], c[4]], [c[1], c[3], c[7], c[5]]]
-
-def plotState(state, packages, truck, path):
-    W, L, H = truck["dimensions"]
-    a = plt.figure(figsize=(4,4)).add_subplot(projection="3d")
-    faces, colors = [], []
-    palette = plt.cm.tab20.colors + plt.cm.tab20b.colors
-    for id, x in state.items():
-        (px, py, pz), (w, l, h) = x["position"], dims(id, x["orientation"], packages)
-        faces += ngotakin(px, py, pz, w, l, h)
-        colors += [palette[list(packages).index(id)]] * 6
-    a.add_collection3d(Poly3DCollection(faces, facecolor=colors, edgecolor="blue"))
-    a.add_collection3d(Poly3DCollection(ngotakin(0, 0, 0, W, L, H), facecolor=(0, 0, 0, 0), edgecolor="black"))
-    a.set(xlim=(0, W), ylim=(0, L), zlim=(0, H), xlabel="x", ylabel="y", zlabel="z")
-    a.set_box_aspect((W, L, H), zoom=1)
-    a.grid(False)
-    for x in (a.xaxis, a.yaxis, a.zaxis):
-        x.set_pane_color("white")
-    plt.savefig(path, dpi=100)
-    plt.close()
-
-def plotValues(values, path):
-    plt.plot(values)
-    plt.xlabel("Iteration")
-    plt.ylabel("Value")
-    plt.savefig(path, dpi=100)
-    plt.close()
-
 def plotProbs(probs, path):
     steps, ps = zip(*[(i, p) for i, p in enumerate(probs) if p is not None])
     plt.scatter(steps, ps, s=1)
@@ -138,26 +106,26 @@ def plotProbs(probs, path):
     plt.savefig(path, dpi=100)
     plt.close()
 
-def saveRun(r, packages, truck, folder):
+def saveRun(res, packages, truck, folder):
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     
-    state = r['initial']
+    state = res['initial']
     out = {"inside": state, "outside": [id for id in packages if id not in state], "value": truckValue(state, packages)}
     with open(folder / "initialState.json", "w") as f:
         json.dump(out, f, indent=2)
     plotState(state, packages, truck, folder / "initialState.png")
     
-    state = r['final']
+    state = res['final']
     out = {"inside": state, "outside": [id for id in packages if id not in state], "value": truckValue(state, packages)}
     with open(folder / "finalState.json", "w") as f:
         json.dump(out, f, indent=2)
     plotState(state, packages, truck, folder / "finalState.png")
     
     with open(folder / "result.json", "w") as f:
-        json.dump({"finalValue": r["finalVal"], "duration": r["duration"], "stuck": r["stuck"]}, f, indent=2)
-    plotValues(r["valuesOT"], folder / "plotObj.png")
-    plotProbs(r["probs"], folder / "plotAcceptance.png")
+        json.dump({"finalValue": res["finalVal"], "duration": res["duration"], "stuck": res["stuck"]}, f, indent=2)
+    plotValues(res["valuesOT"], folder / "plotObj.png")
+    plotProbs(res["probs"], folder / "plotAcceptance.png")
 
 if __name__ == "__main__":
     src = Path(__file__).resolve().parent.parent
@@ -166,6 +134,6 @@ if __name__ == "__main__":
     with open(src / "data" / "truck.json") as f:
         truck = json.load(f)
     for x in (1, 2, 3):
-        r = Run(packages, truck, seed=x)
-        saveRun(r, packages, truck, src.parent / "output" / "simulated_annealing" / f"run{x}")
-        print(f"run {x}: final {r['finalVal']}, {r['duration']:.2f} s, stuck {r['stuck']}")
+        res = Run(packages, truck, seed=x)
+        saveRun(res, packages, truck, src.parent / "output" / "simulated_annealing" / f"run{x}")
+        print(f"run {x}: final {res['finalVal']}, {res['duration']:.2f} s, stuck {res['stuck']}")
