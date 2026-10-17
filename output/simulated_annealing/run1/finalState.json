@@ -1,0 +1,209 @@
+{
+  "inside": {
+    "N": {
+      "position": [
+        8,
+        0,
+        0
+      ],
+      "orientation": [
+        2,
+        0,
+        1
+      ]
+    },
+    "H": {
+      "position": [
+        0,
+        7,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "U": {
+      "position": [
+        4,
+        14,
+        3
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "M": {
+      "position": [
+        0,
+        7,
+        0
+      ],
+      "orientation": [
+        1,
+        2,
+        0
+      ]
+    },
+    "C": {
+      "position": [
+        7,
+        10,
+        2
+      ],
+      "orientation": [
+        2,
+        1,
+        0
+      ]
+    },
+    "I": {
+      "position": [
+        1,
+        0,
+        2
+      ],
+      "orientation": [
+        1,
+        2,
+        0
+      ]
+    },
+    "G": {
+      "position": [
+        0,
+        12,
+        3
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "R": {
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "O": {
+      "position": [
+        0,
+        17,
+        0
+      ],
+      "orientation": [
+        1,
+        0,
+        2
+      ]
+    },
+    "A": {
+      "position": [
+        6,
+        10,
+        4
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "W": {
+      "position": [
+        0,
+        12,
+        2
+      ],
+      "orientation": [
+        1,
+        0,
+        2
+      ]
+    },
+    "F": {
+      "position": [
+        0,
+        4,
+        2
+      ],
+      "orientation": [
+        1,
+        2,
+        0
+      ]
+    },
+    "S": {
+      "position": [
+        0,
+        10,
+        4
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "L": {
+      "position": [
+        0,
+        11,
+        0
+      ],
+      "orientation": [
+        1,
+        0,
+        2
+      ]
+    },
+    "P": {
+      "position": [
+        3,
+        2,
+        2
+      ],
+      "orientation": [
+        1,
+        0,
+        2
+      ]
+    },
+    "V": {
+      "position": [
+        0,
+        8,
+        0
+      ],
+      "orientation": [
+        1,
+        0,
+        2
+      ]
+    }
+  },
+  "outside": [
+    "B",
+    "D",
+    "E",
+    "J",
+    "K",
+    "Q",
+    "T",
+    "X",
+    "Y",
+    "Z"
+  ],
+  "value": 2030
+}
