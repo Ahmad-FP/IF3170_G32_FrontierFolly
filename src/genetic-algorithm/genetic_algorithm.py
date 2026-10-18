@@ -76,7 +76,9 @@ def gen_initial_pop(packages, truck, pop_size):
 
         population.append(chromosome)
 
-    return population
+    inital_chromosome_random = random.choice(population)
+
+    return inital_chromosome_random, population
 
 # Menghitung fitness suatu chromosome
 def fitness(chromosome, packages, truck):
@@ -399,7 +401,7 @@ def genetic_algorithm(packages, truck, pop_size, max_iter, mutation_rate=0.1):
     if not 0 <= mutation_rate <= 1:
         raise ValueError("Mutation rate tidak valid")
 
-    population = gen_initial_pop(packages, truck, pop_size) # Membentuk populasi awal
+    initial_chromosome_random, population = gen_initial_pop(packages, truck, pop_size) # Membentuk populasi awal
 
     # Menghitung nilai fitness dari populasi awal
     fitness_values = [
@@ -461,4 +463,4 @@ def genetic_algorithm(packages, truck, pop_size, max_iter, mutation_rate=0.1):
         history_curr_best.append(curr_best_fitness)
         history_avg.append(sum(fitness_values) / pop_size)
 
-    return best_chromosome, history_best, history_curr_best, history_avg # Mengembalikan kromosom terbaik, history dari fitness terbaik, dan history dari rata-rata fitness
+    return initial_chromosome_random, best_chromosome, history_best, history_curr_best, history_avg # Mengembalikan kromosom terbaik, history dari fitness terbaik, dan history dari rata-rata fitness
