@@ -10,14 +10,15 @@ Program menyelesaikan permasalahan *3D packing* pada peti kemas truk: menyusun p
 .
 ├── docs/        # laporan (PDF) + sumber DOCX
 ├── output/      # hasil run algoritma (state JSON, plot PNG, ringkasan JSON)
-└── src/
-    ├── constraint.py         # validasi constraint state
-    ├── initial_state.py      # generator initial state acak
-    ├── visual.py             # visualisasi state 3D dan kurva nilai objective
-    ├── data/                 # data paket & truk
-    ├── hill_climbing/        # 4 varian hill climbing + eksperimen
-    ├── simulated_annealing/  # simulated annealing + eksperimen
-    └── genetic-algorithm/    # genetic algorithm
+├── src/
+│   ├── constraint.py         # validasi constraint state
+│   ├── initial_state.py      # generator initial state acak
+│   ├── visual.py             # visualisasi state 3D dan kurva nilai objective
+│   ├── data/                 # data paket & truk
+│   ├── hill_climbing/        # 4 varian hill climbing + eksperimen
+│   ├── simulated_annealing/  # simulated annealing + eksperimen
+│   └── genetic-algorithm/    # genetic algorithm
+└── visualizer/  # viewer 3D web (three.js) untuk menjelajahi hasil eksperimen
 ```
 
 ## Setup
@@ -49,6 +50,18 @@ Perintah dijalankan dari masing-masing folder di dalam `src/` karena program mem
 | Uji hill climbing | `cd src/hill_climbing && python test_hill_climbing.py` |
 
 Hasil run ditulis ke `output/` (state `.json`, gambar `.png`, dan ringkasan `.json` per varian/run).
+
+## Visualizer 3D (Web)
+
+Folder `visualizer/` berisi viewer 3D berbasis three.js (tanpa build step, three.js sudah di-vendor) untuk menjelajahi hasil eksperimen: pilih algoritma + run, lihat state awal/akhir, animasi morph, statistik nilai/berat, badge validitas constraint (port dari `src/constraint.py`), dan keterangan paket saat hover (dimensi, value, berat, eta, fragile).
+
+```bash
+# jalankan dari root repo
+python3 -m http.server 8123
+# lalu buka http://localhost:8123/visualizer/
+```
+
+Sebuah berkas `*State.json` juga bisa di-drag & drop langsung ke area 3D untuk melihat state tunggal (tanpa server). URL bisa dibagikan, contoh: `http://localhost:8123/visualizer/?algo=random_restart&run=3`.
 
 ## Hasil Eksperimen (3 run)
 

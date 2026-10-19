@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Truck Packing 3D — IF3170 FrontierFolly</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.min.js" } }
+  </script>
+</head>
+<body>
+  <aside id="panel">
+    <header id="head">
+      <h1>Truck Packing <span>3D</span></h1>
+      <p class="sub">IF3170 Inteligensi Artifisial · FrontierFolly — Hill Climbing &amp; Simulated Annealing</p>
+    </header>
+
+    <section class="card">
+      <label for="algo">Algoritma</label>
+      <select id="algo"></select>
+      <div class="row">
+        <div class="grow">
+          <label for="run">Run (seed)</label>
+          <select id="run"></select>
+        </div>
+        <div class="grow">
+          <label for="colorMode">Warna paket</label>
+          <select id="colorMode">
+            <option value="value">Value</option>
+            <option value="weight">Berat</option>
+            <option value="fragile">Fragile</option>
+          </select>
+        </div>
+      </div>
+      <div id="legend" class="legend"><span id="legendMin"></span><span id="legendMax"></span></div>
+      <p id="runPath" class="path"></p>
+    </section>
+
+    <section class="card">
+      <h2>Statistik</h2>
+      <div class="stat"><span>Nilai (value)</span><b id="stValue">–</b></div>
+      <div class="stat"><span>Skor objective</span><b id="stScore">–</b></div>
+      <div class="stat"><span>Berat</span><b id="stWeight">–</b></div>
+      <div class="stat"><span>Paket termuat</span><b id="stCount">–</b></div>
+      <div class="chips" id="stExtras"></div>
+      <div class="checks" id="stChecks"></div>
+      <p class="foot">Batas atas subset (berat + volume, tanpa geometri): <b>2655</b></p>
+    </section>
+
+    <section class="card">
+      <h2>Animasi state awal → akhir</h2>
+      <div class="morphrow">
+        <input type="range" id="t" min="0" max="1" step="0.001" value="1" />
+        <span id="tLabel" class="badge">akhir</span>
+      </div>
+      <div class="btnrow">
+        <button id="btnInitial" type="button">Awal</button>
+        <button id="play" type="button" class="primary">▶ Putar morph</button>
+        <button id="btnFinal" type="button">Akhir</button>
+      </div>
+      <div class="btnrow checks-row">
+        <label class="check"><input type="checkbox" id="chkLabels" checked /> Label paket</label>
+        <label class="check"><input type="checkbox" id="chkOutside" checked /> Paket di luar truk</label>
+      </div>
+      <button id="resetCam" type="button" class="ghost">↺ Reset kamera</button>
+    </section>
+
+    <p class="footnote">Data dibaca dari folder <code>output/</code>. Drag &amp; drop sebuah berkas <code>*State.json</code> ke area 3D untuk melihat state tunggal.</p>
+  </aside>
+
+  <main id="stage">
+    <div id="banner" class="hidden"></div>
+    <div id="tooltip" class="hidden"></div>
+    <div id="hint">Drag: putar · Scroll: zoom · Klik-kanan: geser</div>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

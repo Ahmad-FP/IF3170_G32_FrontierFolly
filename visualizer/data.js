@@ -1,0 +1,456 @@
+// Dibuat otomatis dari src/data/packages.json + src/data/truck.json — jangan edit manual.
+// Regenerate: python3 -c "..." (lihat README visualizer)
+export const DATA = {
+  "truck": {
+    "dimensions": [
+      10,
+      20,
+      5
+    ],
+    "max_capacity": 500
+  },
+  "packages": {
+    "A": {
+      "id": "A",
+      "dimensions": [
+        3,
+        4,
+        1
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 60,
+      "weight": 5,
+      "is_fragile": false,
+      "eta": 3
+    },
+    "B": {
+      "id": "B",
+      "dimensions": [
+        4,
+        5,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 100,
+      "weight": 10,
+      "is_fragile": true,
+      "eta": 2
+    },
+    "C": {
+      "id": "C",
+      "dimensions": [
+        2,
+        4,
+        1
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 80,
+      "weight": 4,
+      "is_fragile": false,
+      "eta": 4
+    },
+    "D": {
+      "id": "D",
+      "dimensions": [
+        5,
+        6,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 130,
+      "weight": 24,
+      "is_fragile": false,
+      "eta": 3
+    },
+    "E": {
+      "id": "E",
+      "dimensions": [
+        6,
+        7,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 150,
+      "weight": 29,
+      "is_fragile": true,
+      "eta": 2
+    },
+    "F": {
+      "id": "F",
+      "dimensions": [
+        2,
+        3,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 55,
+      "weight": 8,
+      "is_fragile": false,
+      "eta": 5
+    },
+    "G": {
+      "id": "G",
+      "dimensions": [
+        4,
+        8,
+        1
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 105,
+      "weight": 17,
+      "is_fragile": false,
+      "eta": 4
+    },
+    "H": {
+      "id": "H",
+      "dimensions": [
+        7,
+        5,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 160,
+      "weight": 26,
+      "is_fragile": false,
+      "eta": 1
+    },
+    "I": {
+      "id": "I",
+      "dimensions": [
+        3,
+        6,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 95,
+      "weight": 14,
+      "is_fragile": true,
+      "eta": 3
+    },
+    "J": {
+      "id": "J",
+      "dimensions": [
+        5,
+        9,
+        1
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 140,
+      "weight": 23,
+      "is_fragile": false,
+      "eta": 2
+    },
+    "K": {
+      "id": "K",
+      "dimensions": [
+        4,
+        4,
+        3
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 110,
+      "weight": 21,
+      "is_fragile": true,
+      "eta": 4
+    },
+    "L": {
+      "id": "L",
+      "dimensions": [
+        6,
+        8,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 190,
+      "weight": 35,
+      "is_fragile": false,
+      "eta": 1
+    },
+    "M": {
+      "id": "M",
+      "dimensions": [
+        2,
+        7,
+        1
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 65,
+      "weight": 9,
+      "is_fragile": false,
+      "eta": 5
+    },
+    "N": {
+      "id": "N",
+      "dimensions": [
+        8,
+        5,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 175,
+      "weight": 31,
+      "is_fragile": true,
+      "eta": 2
+    },
+    "O": {
+      "id": "O",
+      "dimensions": [
+        3,
+        9,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 135,
+      "weight": 20,
+      "is_fragile": false,
+      "eta": 3
+    },
+    "P": {
+      "id": "P",
+      "dimensions": [
+        5,
+        5,
+        3
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 165,
+      "weight": 32,
+      "is_fragile": true,
+      "eta": 1
+    },
+    "Q": {
+      "id": "Q",
+      "dimensions": [
+        6,
+        4,
+        1
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 90,
+      "weight": 14,
+      "is_fragile": false,
+      "eta": 4
+    },
+    "R": {
+      "id": "R",
+      "dimensions": [
+        7,
+        7,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 205,
+      "weight": 39,
+      "is_fragile": false,
+      "eta": 2
+    },
+    "S": {
+      "id": "S",
+      "dimensions": [
+        4,
+        10,
+        1
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 125,
+      "weight": 18,
+      "is_fragile": true,
+      "eta": 3
+    },
+    "T": {
+      "id": "T",
+      "dimensions": [
+        3,
+        5,
+        3
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 115,
+      "weight": 19,
+      "is_fragile": false,
+      "eta": 5
+    },
+    "U": {
+      "id": "U",
+      "dimensions": [
+        6,
+        6,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 170,
+      "weight": 28,
+      "is_fragile": true,
+      "eta": 2
+    },
+    "V": {
+      "id": "V",
+      "dimensions": [
+        2,
+        10,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 100,
+      "weight": 16,
+      "is_fragile": false,
+      "eta": 4
+    },
+    "W": {
+      "id": "W",
+      "dimensions": [
+        8,
+        6,
+        1
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 145,
+      "weight": 22,
+      "is_fragile": false,
+      "eta": 3
+    },
+    "X": {
+      "id": "X",
+      "dimensions": [
+        4,
+        7,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 155,
+      "weight": 24,
+      "is_fragile": false,
+      "eta": 1
+    },
+    "Y": {
+      "id": "Y",
+      "dimensions": [
+        5,
+        8,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 180,
+      "weight": 30,
+      "is_fragile": true,
+      "eta": 2
+    },
+    "Z": {
+      "id": "Z",
+      "dimensions": [
+        7,
+        9,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ],
+      "value": 220,
+      "weight": 40,
+      "is_fragile": false,
+      "eta": 1
+    }
+  }
+};
