@@ -1,0 +1,26 @@
+[
+  {
+    "variant": "steepest_ascent",
+    "seed": 1,
+    "finalValue": 1319.4167,
+    "realValue": 1975,
+    "duration": 0.067,
+    "iterations": 14
+  },
+  {
+    "variant": "steepest_ascent",
+    "seed": 2,
+    "finalValue": 1049.4167,
+    "realValue": 2010,
+    "duration": 0.126,
+    "iterations": 10
+  },
+  {
+    "variant": "steepest_ascent",
+    "seed": 3,
+    "finalValue": 1096.9167,
+    "realValue": 1975,
+    "duration": 0.162,
+    "iterations": 9
+  }
+]

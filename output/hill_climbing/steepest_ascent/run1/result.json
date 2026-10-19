@@ -1,0 +1,10 @@
+{
+  "variant": "steepest_ascent",
+  "objective": "value",
+  "seed": 1,
+  "finalValue": 2035,
+  "realValue": 2035,
+  "duration": 0.03910802199970931,
+  "iterations": 13,
+  "max_iter": 2000
+}

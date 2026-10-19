@@ -1,0 +1,12 @@
+{
+  "variant": "stochastic",
+  "objective": "value",
+  "seed": 3,
+  "finalValue": 1710,
+  "realValue": 1710,
+  "duration": 0.2755542930099182,
+  "iterations": 5,
+  "max_iter": 2000,
+  "trials_per_iteration": 100,
+  "total_attempts": 322
+}
