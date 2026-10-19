@@ -1,0 +1,122 @@
+{
+  "inside": {
+    "A": {
+      "position": [
+        1,
+        3,
+        0
+      ],
+      "orientation": [
+        2,
+        1,
+        0
+      ]
+    },
+    "D": {
+      "position": [
+        4,
+        5,
+        0
+      ],
+      "orientation": [
+        1,
+        2,
+        0
+      ]
+    },
+    "H": {
+      "position": [
+        1,
+        1,
+        0
+      ],
+      "orientation": [
+        0,
+        2,
+        1
+      ]
+    },
+    "O": {
+      "position": [
+        1,
+        18,
+        0
+      ],
+      "orientation": [
+        1,
+        2,
+        0
+      ]
+    },
+    "P": {
+      "position": [
+        4,
+        15,
+        0
+      ],
+      "orientation": [
+        0,
+        2,
+        1
+      ]
+    },
+    "Q": {
+      "position": [
+        1,
+        10,
+        4
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "U": {
+      "position": [
+        4,
+        8,
+        0
+      ],
+      "orientation": [
+        1,
+        0,
+        2
+      ]
+    },
+    "X": {
+      "position": [
+        2,
+        8,
+        0
+      ],
+      "orientation": [
+        2,
+        1,
+        0
+      ]
+    }
+  },
+  "outside": [
+    "B",
+    "C",
+    "E",
+    "F",
+    "G",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "R",
+    "S",
+    "T",
+    "V",
+    "W",
+    "Y",
+    "Z"
+  ],
+  "value": 1065,
+  "score": 1065
+}

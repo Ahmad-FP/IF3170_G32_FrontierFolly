@@ -1,0 +1,13 @@
+{
+  "variant": "sideways_move",
+  "objective": "value",
+  "seed": 2,
+  "finalValue": 2140,
+  "realValue": 2140,
+  "duration": 7.677210691006621,
+  "iterations": 212,
+  "max_iter": 2000,
+  "max_sideways": 200,
+  "sideways_moves": 200,
+  "stopped_by": "max_sideways"
+}
