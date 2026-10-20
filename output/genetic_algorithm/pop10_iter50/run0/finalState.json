@@ -1,0 +1,267 @@
+{
+  "inside": {
+    "A": {
+      "position": [
+        0,
+        3,
+        0
+      ],
+      "orientation": [
+        2,
+        0,
+        1
+      ]
+    },
+    "B": {
+      "position": null,
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "C": {
+      "position": [
+        4,
+        5,
+        0
+      ],
+      "orientation": [
+        1,
+        2,
+        0
+      ]
+    },
+    "D": {
+      "position": [
+        1,
+        17,
+        0
+      ],
+      "orientation": [
+        1,
+        2,
+        0
+      ]
+    },
+    "E": {
+      "position": null,
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "F": {
+      "position": [
+        8,
+        17,
+        0
+      ],
+      "orientation": [
+        0,
+        2,
+        1
+      ]
+    },
+    "G": {
+      "position": null,
+      "orientation": [
+        1,
+        0,
+        2
+      ]
+    },
+    "H": {
+      "position": [
+        3,
+        12,
+        0
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "I": {
+      "position": [
+        0,
+        6,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "J": {
+      "position": null,
+      "orientation": [
+        2,
+        1,
+        0
+      ]
+    },
+    "K": {
+      "position": [
+        6,
+        13,
+        2
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "L": {
+      "position": [
+        0,
+        6,
+        0
+      ],
+      "orientation": [
+        1,
+        0,
+        2
+      ]
+    },
+    "M": {
+      "position": null,
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "N": {
+      "position": [
+        2,
+        3,
+        0
+      ],
+      "orientation": [
+        0,
+        2,
+        1
+      ]
+    },
+    "O": {
+      "position": [
+        3,
+        6,
+        3
+      ],
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "P": {
+      "position": [
+        0,
+        12,
+        0
+      ],
+      "orientation": [
+        2,
+        1,
+        0
+      ]
+    },
+    "Q": {
+      "position": null,
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "R": {
+      "position": null,
+      "orientation": [
+        1,
+        0,
+        2
+      ]
+    },
+    "S": {
+      "position": null,
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "T": {
+      "position": null,
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "U": {
+      "position": null,
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "V": {
+      "position": null,
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "W": {
+      "position": [
+        4,
+        5,
+        2
+      ],
+      "orientation": [
+        1,
+        0,
+        2
+      ]
+    },
+    "X": {
+      "position": [
+        1,
+        1,
+        0
+      ],
+      "orientation": [
+        1,
+        2,
+        0
+      ]
+    },
+    "Y": {
+      "position": null,
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Z": {
+      "position": null,
+      "orientation": [
+        0,
+        1,
+        2
+      ]
+    }
+  },
+  "outside": [],
+  "value": 1655,
+  "duration": 1.229610582930036
+}
