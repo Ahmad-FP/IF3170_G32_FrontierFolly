@@ -1,16 +1,10 @@
 import sys
 import random
 from pathlib import Path
-
-# Mengambil module di luar path parent kode ini
-# https://docs.python.org/3.13/tutorial/modules.html
-# https://docs.python.org/3.14/library/pathlib.html
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-
 from constraint import state_valid
 from initial_state import gen_initial_state, possible_height
 
-# Pola orientasi
 ORIENTATIONS = [
     (0, 1, 2),
     (0, 2, 1),
@@ -30,7 +24,7 @@ def encode_state(state, packages):
         orientation = placement["orientation"]
 
         ori_id = ORIENTATIONS.index(orientation)
-        if position is None: # Jika berada di luar truck
+        if position is None: 
             chromosome.extend([0, 0, 0, 0, ori_id])
 
         else:
@@ -51,13 +45,12 @@ def decode_state(chromosome, packages):
     for i, package_id in enumerate(packages):
         a, x, y, z, ori_id = chromosome[(i*5):(i*5+5)]
 
-        if a == 0: # Jika paket di luar truk
+        if a == 0: 
             position = None
-        elif a == 1: # Jika paket di dalam truk
+        elif a == 1: 
             position = (x, y, z)
-        else: # Jika nilai kondisi posisi lebih dari satu
-            raise ValueError("Nilai kondisi posisi tidak boleh lebih dari 1") # https://stackoverflow.com/questions/4393268/how-to-raise-a-valueerror
-        
+        else: 
+            raise ValueError("Nilai kondisi posisi tidak boleh lebih dari 1") 
         orientation = ORIENTATIONS[ori_id]
         state[package_id] = {
             "position" : position,
@@ -84,14 +77,12 @@ def gen_initial_pop(packages, truck, pop_size):
 def fitness(chromosome, packages, truck):
     state = decode_state(chromosome, packages)
 
-    # Jika state tidak valid
     if not state_valid(state, packages, truck):
-        return float("-inf") # https://www.geeksforgeeks.org/python/python-infinity/
+        return float("-inf") 
 
     total_value = 0
 
-    # Menghitung total value yang di dapat dari paket di dalam truck
-    for package_id, placement in state.items(): # https://www.geeksforgeeks.org/python/python-accessing-key-value-in-dictionary/
+    for package_id, placement in state.items(): 
         if placement["position"] is not None:
             total_value += packages[package_id]["value"]
 
@@ -99,7 +90,6 @@ def fitness(chromosome, packages, truck):
 
 # Memilih parent dengan sistem roulette
 def roulette_selection(population, packages, truck):
-    # Mengambil semua nilai fitness value dari chromosome di populasi
     fitness_value = [
         fitness(chromosome, packages, truck)
         for chromosome in population
@@ -107,11 +97,9 @@ def roulette_selection(population, packages, truck):
 
     total_fitness = sum(fitness_value)
 
-    # Jika semua fitness bernilai nol
     if total_fitness == 0:
         return random.choice(population).copy()
 
-    # Menghasilkan angka acak dari 0 sampai 100
     random_number = random.random() * 100
 
     cum_probability = 0
@@ -132,22 +120,18 @@ def roulette_selection(population, packages, truck):
 def repair_state(state, packages, truck):
     repaired = {}
 
-    # Inisialisasi semua paket yang terdaftar di state itu di luar truck
+    # Inisialisasi semua paket
     for package_id in packages:
         repaired[package_id] = {
             "position" : None,
             "orientation" : state[package_id]["orientation"]
         }
 
-    # List id paket yang berada di dalam truck
     list_package_id = [
         package_id for package_id in packages
         if state[package_id]["position"] is not None
     ]
     
-    # Sorting berdasarkan ketinggian paket dan value tertinggi
-    # https://www.w3schools.com/python/ref_list_sort.asp
-    # https://www.w3schools.com/python/python_lambda.asp
     list_package_id.sort(key=lambda package_id: (
         state[package_id]["position"][2],
         -packages[package_id]["value"]))
@@ -156,7 +140,6 @@ def repair_state(state, packages, truck):
 
     for package_id in list_package_id:
 
-        # Mengambil posisi dan orientasi awal paket
         original_position = state[package_id]["position"]
         orientation = state[package_id]["orientation"]
         dimensions = packages[package_id]["dimensions"]
@@ -167,9 +150,8 @@ def repair_state(state, packages, truck):
         if state_valid(repaired, packages, truck):
             continue
 
-        repaired[package_id]["position"] = None # Jika posisi awal tidak valid, dikosongkan terlebih dahulu
+        repaired[package_id]["position"] = None 
 
-        # Memeriksa apakah dimensi paket muat di truk
         if any(rotate_dims[k] > truck_dims[k] for k in range(3)):
             continue
 
@@ -185,34 +167,29 @@ def repair_state(state, packages, truck):
 
         # Menambahkan pilihan berdasarkan posisi paket lain
         for other_id in packages:
-            other_position = repaired[other_id]["position"] # Posisi paket lain
-
-            if other_position is None: # Jika paket lain ini masih di luar
+            other_position = repaired[other_id]["position"] 
+            if other_position is None: 
                 continue
 
-            other_orientation = repaired[other_id]["orientation"] # Orientasi paket lain
-            other_dimensions = packages[other_id]["dimensions"] # Ukuran paket lain
-
-            # Dimensi setelah di rotasi kan
+            other_orientation = repaired[other_id]["orientation"] 
+            other_dimensions = packages[other_id]["dimensions"] 
             other_rotate_dims = [
                 other_dimensions[i] for i in other_orientation
             ]
 
-            ox, oy, oz = other_position # Pemecahan posisi paket lain
-            ow, ol, oh = other_rotate_dims # Pemecahan dimensi paket lain
-
+            ox, oy, oz = other_position 
+            ow, ol, oh = other_rotate_dims 
             x_choices.update([
-                ox, # Posisi kiri paket lain sejajar dengan paket saat ini
-                ox + ow, # Posisi kanan paket lain bersebelahan dengan posisi kiri paket saat ini
-                ox - rotate_dims[0], # Posisi kiri paket lain bersebelahan dengan posisi kanan paket saat ini
-                ox + ow - rotate_dims[0] # Posisi kanan paket lain sejajar dengan paket saat ini
+                ox, 
+                ox + ow, 
+                ox - rotate_dims[0], 
+                ox + ow - rotate_dims[0] 
             ])
-
             y_choices.update([
-                oy, # Posisi belakang paket lain sejajar dengan paket saat ini
-                oy + ol, # Posisi depan paket lain bersebelahan dengan posisi belakang paket saat ini
-                oy - rotate_dims[1], # Posisi belakang paket lain bersebelahan dengan posisi depan paket saat ini
-                oy + ol - rotate_dims[1] # Posisi depan paket lain sejajar dengan paket saat ini
+                oy, 
+                oy + ol, 
+                oy - rotate_dims[1], 
+                oy + ol - rotate_dims[1] 
             ])
 
         # Jika pilihan posisi masih di dalam truk
@@ -226,7 +203,7 @@ def repair_state(state, packages, truck):
             if 0 <= y <= truck_dims[1] - rotate_dims[1]
         ]
 
-        # Membentuk kombinasi pilihan yang sudah difilter X dan Y
+        # pilihan yang sudah difilter X dan Y
         positions_xy = [
             (x, y)
             for x in x_choices
@@ -235,9 +212,8 @@ def repair_state(state, packages, truck):
 
         random.shuffle(positions_xy)
 
-        # Mencari posisi baru yang valid
+        # Cari posisi valid
         found = False
-
         for z in sorted(heights):
             for x, y in positions_xy:
 
@@ -246,28 +222,18 @@ def repair_state(state, packages, truck):
                 if state_valid(repaired, packages, truck): # Jika state valid
                     found = True
                     break
-
             if found:
                 break
-
-        # Jika tidak ditemukan posisi valid, keluarkan paket
         if not found:
             repaired[package_id]["position"] = None
-
     return repaired
 
-# Melakukan repair kromosom
 def repair_chromosome(chromosome, packages, truck):
-    
-    # Mengubah kromosom menjadi state
     state = decode_state(chromosome, packages)
-
-    # Merepair state
     repaired_state = repair_state(state, packages, truck)
-
     return encode_state(repaired_state, packages)
 
-# Menghitung value yang hilang saat di repair
+# Hitung value hilang karena repair
 def raw_value(chromosome, packages):
     state = decode_state(chromosome, packages)
     total = 0
@@ -278,77 +244,58 @@ def raw_value(chromosome, packages):
 
     return total
 
-# Melakukan crossover
 def crossover(parent_1, parent_2, packages):
     num_packages = len(packages)
-
-    # Jika paket kurang dari dua, crossover tidak bisa dilakukan
     if (num_packages < 2):
         return parent_1.copy()
-
-    # Randomize titik potong crossover
     cut_index = (random.randint(1, num_packages - 1)) * 5
-
-    # Child hasil crossover
     child = parent_1[:cut_index] + parent_2[cut_index:]
-
     return child
 
 # Melakukan mutasi
 def mutation(chromosome, packages, truck):
     mutated = chromosome.copy()
 
-    if not packages: # Jika packages kosong
+    if not packages: 
         return mutated
 
-    # Memilih index secara acak
     package_idx = random.randint(0, len(packages) - 1)
     package_id = list(packages.keys())[package_idx]
 
     start = package_idx * 5
     a, x, y, z, ori_id = mutated[start:start+5]
 
-    # Mengambil dimensi paket dan truk
     dimensions = packages[package_id]["dimensions"]
     truck_dims = truck["dimensions"]
 
     orientation = ORIENTATIONS[ori_id]
     rotate_dims = [dimensions[i] for i in orientation]
 
-    # Menentukan jenis operasi
     if a == 0:
         operation = "add"
     else:
         operation = random.choice(["remove", "move", "rotate"])
 
-    if operation == "add": # Kondisi operasi ketika menambahkan paket ke truk
-        # Mengacak orientasi
+    if operation == "add": 
         ori_id = random.randint(0, 5)
         orientation = ORIENTATIONS[ori_id]
         rotate_dims = [dimensions[i] for i in orientation]
-
-        # Memeriksa apakah dimensi paket lebih besar daripada dimensi truk
         if any(rotate_dims[k] > truck_dims[k] for k in range(3)):
             return mutated
 
-        # Mengambil hanya pada ketinggian yang mungkin
         state = decode_state(chromosome, packages)
-
         heights = [
             h for h in possible_height(state, packages)
             if h + rotate_dims[2] <= truck_dims[2]
         ]
-
         if not heights:
             return mutated
 
-        # Mengacak posisi paket
         position = (
             random.randint(0, truck_dims[0] - rotate_dims[0]),
             random.randint(0, truck_dims[1] - rotate_dims[1]),
             random.choice(heights)
         )
-
         mutated[start:start+5] = [
             1,
             position[0],
@@ -357,13 +304,12 @@ def mutation(chromosome, packages, truck):
             ori_id
         ]
 
-    elif operation == "remove": # Jika operasi yang dilakukan adalah mengeluarkan paket dari truck
+    elif operation == "remove": 
         mutated[start:start+5] = [0, 0, 0, 0, ori_id]
 
-    elif operation == "move": # Jika operasi yang dilakukan adalah memindahkan posisi paket di truck
+    elif operation == "move": 
         position = [x, y, z]
 
-        # Memilih axis manakah yang diubah
         axis = random.randint(0, 2)
 
         if (axis == 0) or (axis == 1):
@@ -378,21 +324,18 @@ def mutation(chromosome, packages, truck):
             ]
 
         choices = [value for value in choices if value != position[axis]]
-
         if not choices:
             return mutated
 
-        # Mengubah satu posisi koordinat
         position[axis] = random.choice(choices)
         mutated[start+1:start+4] = position    
 
-    elif operation == "rotate": # Jika operasi yang dilakukan adalah melakukan rotasi paket dari truck
+    elif operation == "rotate": 
         opt_rotate = [i for i in range(6) if i != ori_id]
         mutated[start+4] = random.choice(opt_rotate)
 
     return mutated
 
-# Melakukan genetic algorithm
 def genetic_algorithm(packages, truck, pop_size, max_iter, mutation_rate=0.1):
     
     if pop_size < 1 or max_iter < 0:
@@ -401,56 +344,45 @@ def genetic_algorithm(packages, truck, pop_size, max_iter, mutation_rate=0.1):
     if not 0 <= mutation_rate <= 1:
         raise ValueError("Mutation rate tidak valid")
 
-    initial_chromosome_random, population = gen_initial_pop(packages, truck, pop_size) # Membentuk populasi awal
-
-    # Menghitung nilai fitness dari populasi awal
+    initial_chromosome_random, population = gen_initial_pop(packages, truck, pop_size) 
     fitness_values = [
         fitness(chromosome, packages, truck)
         for chromosome in population
     ]
-
-    # Menyimpan individu terbaik
     best_idx = fitness_values.index(max(fitness_values))
     best_chromosome = population[best_idx].copy()
     best_fitness = fitness_values[best_idx]
 
-    # History terbaik tiap iterasi
     history_best = [best_fitness]
     history_curr_best = [best_fitness]
     history_avg = [sum(fitness_values) / pop_size]
 
-    # Pengulangan proses evolusi
     for _ in range(max_iter):
-        new_population = [best_chromosome.copy()] # Inisialisasi awal
+        new_population = [best_chromosome.copy()] 
         while len(new_population) < pop_size:
 
-            # Memilih dua parent
             parent_1 = roulette_selection(population, packages, truck)
             parent_2 = roulette_selection(population, packages, truck)
         
-            child = crossover(parent_1, parent_2, packages) # Crossover
+            child = crossover(parent_1, parent_2, packages) 
 
             value_before = raw_value(child, packages)
-            child = repair_chromosome(child, packages, truck) # Perbaiki jika ada child yang tidak valid
+            child = repair_chromosome(child, packages, truck) 
             value_after = raw_value(child, packages)
 
-            # Mutasi jika probabilitas terpenuhi
             if random.random() < mutation_rate:
                 child = mutation(child, packages, truck)
 
-            child = repair_chromosome(child, packages, truck) # Perbaiki jika mutasi membuat tidak valid
+            child = repair_chromosome(child, packages, truck) 
+            new_population.append(child) 
 
-            new_population.append(child) # Memasukkan child ke populasi baru
+        population = new_population 
 
-        population = new_population # Mengganti populasi ke yang baru
-
-        # Menghitung fitness generasi baru
         fitness_values = [
             fitness(chromosome, packages, truck)
             for chromosome in population
         ]
 
-        # Memperbarui solusi terbaik saat ini
         curr_best_idx = fitness_values.index(max(fitness_values))
         curr_best_fitness = fitness_values[curr_best_idx]
 
@@ -458,7 +390,6 @@ def genetic_algorithm(packages, truck, pop_size, max_iter, mutation_rate=0.1):
             best_fitness = curr_best_fitness
             best_chromosome = population[curr_best_idx].copy()
 
-        # Menyimpan history fitness
         history_best.append(best_fitness)
         history_curr_best.append(curr_best_fitness)
         history_avg.append(sum(fitness_values) / pop_size)
