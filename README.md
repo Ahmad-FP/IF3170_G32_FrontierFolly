@@ -50,7 +50,7 @@ Hasil run ditulis ke `output/` (state `.json`, gambar `.png`, dan ringkasan `.js
 
 ## Visualizer 3D (Web)
 
-Viewer three.js tanpa build step untuk menjelajahi state awal/akhir setiap run: animasi morph, statistik, validasi constraint (port dari `src/constraint.py`), dan detail paket. three.js dan font sudah di-vendor sehingga tidak butuh koneksi internet.
+Viewer three.js tanpa build step untuk menjelajahi state awal/akhir setiap run (empat varian Hill Climbing, Simulated Annealing, lima konfigurasi Genetic Algorithm, dan bonus urgency): animasi morph, statistik, validasi constraint (port dari `src/constraint.py`), dan detail paket. three.js dan font sudah di-vendor sehingga tidak butuh koneksi internet.
 
 ### Menjalankan
 
@@ -76,8 +76,8 @@ Buka <http://localhost:8123/visualizer/>. Server harus dijalankan dari root repo
 
 | Parameter | Nilai | Contoh |
 |---|---|---|
-| `algo` | `random_restart`, `steepest_ascent`, `stochastic`, `sideways_move`, `sa`, `bonus` | `?algo=sa` |
-| `run` | `1`, `2`, `3` | `?algo=sa&run=2` |
+| `algo` | `random_restart`, `steepest_ascent`, `stochastic`, `sideways_move`, `sa`, `ga_pop10_iter50`, `ga_pop30_iter25`, `ga_pop30_iter50`, `ga_pop30_iter100`, `ga_pop50_iter50`, `bonus` | `?algo=sa` |
+| `run` | `1`, `2`, `3` (untuk Genetic Algorithm dipetakan ke folder `run0`–`run2`) | `?algo=sa&run=2` |
 | `t` | `0`–`1` (posisi morph) | `?t=0.5` |
 | `color` | `value`, `weight`, `fragile` | `?color=fragile` |
 | `select` | ID paket, mis. `A` | `?select=A` |
@@ -97,8 +97,9 @@ Tampilan default: `random_restart` run 2 (nilai 2250).
 | Sideways move | 2140 |
 | Random restart | 2250 |
 | Simulated annealing | 2040 |
+| Genetic algorithm (terbaik: populasi 50, 50 generasi) | 2045 |
 
-Ringkasan HC ada di `output/hill_climbing/summary.json`, SA di `output/simulated_annealing/run*/result.json`. Analisis lengkap ada di laporan.
+Ringkasan HC ada di `output/hill_climbing/summary.json`, SA di `output/simulated_annealing/run*/result.json`, GA di `output/genetic_algorithm/<pop>_<iter>/run*/finalState.json`. Analisis lengkap ada di laporan.
 
 ## Pembagian Tugas
 

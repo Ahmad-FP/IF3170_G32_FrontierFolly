@@ -18,6 +18,11 @@ const ALGOS = [
   { id: 'stochastic',      label: 'Hill Climbing — Stochastic',      base: '../output/hill_climbing/stochastic' },
   { id: 'sideways_move',   label: 'Hill Climbing — Sideways Move',   base: '../output/hill_climbing/sideways_move' },
   { id: 'sa',              label: 'Simulated Annealing',             base: '../output/simulated_annealing' },
+  { id: 'ga_pop10_iter50',  label: 'Genetic Algorithm — Populasi 10, 50 Generasi',  base: '../output/genetic_algorithm/pop10_iter50',  runOffset: -1, result: false, pop: 10, generations: 50 },
+  { id: 'ga_pop30_iter25',  label: 'Genetic Algorithm — Populasi 30, 25 Generasi',  base: '../output/genetic_algorithm/pop30_iter25',  runOffset: -1, result: false, pop: 30, generations: 25 },
+  { id: 'ga_pop30_iter50',  label: 'Genetic Algorithm — Populasi 30, 50 Generasi',  base: '../output/genetic_algorithm/pop30_iter50',  runOffset: -1, result: false, pop: 30, generations: 50 },
+  { id: 'ga_pop30_iter100', label: 'Genetic Algorithm — Populasi 30, 100 Generasi', base: '../output/genetic_algorithm/pop30_iter100', runOffset: -1, result: false, pop: 30, generations: 100 },
+  { id: 'ga_pop50_iter50',  label: 'Genetic Algorithm — Populasi 50, 50 Generasi',  base: '../output/genetic_algorithm/pop50_iter50',  runOffset: -1, result: false, pop: 50, generations: 50 },
   { id: 'bonus',           label: 'Bonus — Objective Urgency',       base: '../output/hill_climbing/bonus_alt_objective/steepest' },
 ];
 const RUNS = [1, 2, 3];
@@ -273,9 +278,15 @@ let playState = null;
 let selectedId = null;
 
 function norm(saved) {
+  const inside = {};
+  const outside = new Set(saved.outside || []);
+  for (const [id, v] of Object.entries(saved.inside || {})) {
+    if (v && Array.isArray(v.position)) inside[id] = v;
+    else outside.add(id);
+  }
   return {
-    inside: saved.inside || {},
-    outside: saved.outside || [],
+    inside,
+    outside: [...outside],
     value: saved.value ?? null,
     score: saved.score ?? saved.value ?? null,
   };
@@ -297,17 +308,17 @@ async function loadRun(algoId, run) {
   setRunUI();
 
   const algo = ALGOS.find((a) => a.id === algoId);
-  const base = `${algo.base}/run${run}`;
+  const base = `${algo.base}/run${run + (algo.runOffset ?? 0)}`;
   hideBanner();
   let initial;
   let final;
   let result;
   try {
-    [initial, final, result] = await Promise.all([
+    [initial, final] = await Promise.all([
       getJson(`${base}/initialState.json`),
       getJson(`${base}/finalState.json`),
-      getJson(`${base}/result.json`, false),
     ]);
+    result = algo.result === false ? null : await getJson(`${base}/result.json`, false);
   } catch (err) {
     showBanner(`Gagal memuat <code>${base}</code>.<br>Jalankan lewat server lokal dari root repo, contoh:<br>`
       + '<code>cd IF3170_G32_FrontierFolly && python3 -m http.server 8123</code>, lalu buka <code>http://localhost:8123/visualizer/</code>.');
@@ -315,6 +326,9 @@ async function loadRun(algoId, run) {
   }
   stopPlay();
   clearSelection();
+  if (!result && final.duration != null) {
+    result = { duration: final.duration, pop_size: algo.pop, generations: algo.generations };
+  }
   runData = { base, initial: norm(initial), final: norm(final), result };
   buildScene();
   updatePanel();
@@ -638,6 +652,8 @@ function updatePanel() {
   if (result?.seed != null) chips.push(chip('seed', `seed ${result.seed}`));
   if (result?.duration != null) chips.push(chip('clock', `${fmt(result.duration, 3)} s`));
   if (result?.iterations != null) chips.push(chip('repeat', `${result.iterations} iterasi`));
+  if (result?.generations != null) chips.push(chip('repeat', `${result.generations} generasi`));
+  if (result?.pop_size != null) chips.push(chip('seed', `populasi ${result.pop_size}`));
   if (result?.stuck != null) chips.push(chip('alert', `stuck ${result.stuck}`));
   if (result?.restarts != null) chips.push(chip('refresh', `${result.restarts} restart`));
   if (result?.sideways_moves != null) chips.push(chip('arrowRight', `${result.sideways_moves} sideways`));
