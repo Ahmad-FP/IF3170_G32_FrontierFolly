@@ -50,7 +50,7 @@ const dom = {
   stValue: $('stValue'), stScore: $('stScore'), stWeight: $('stWeight'), stCount: $('stCount'),
   weightBar: $('weightBar'), stExtras: $('stExtras'), stChecks: $('stChecks'),
   t: $('t'), tLabel: $('tLabel'), btnInitial: $('btnInitial'), btnFinal: $('btnFinal'),
-  modeSeg: $('modeSeg'), animPill: $('animPill'), traceBtn: $('traceBtn'), traceEvent: $('traceEvent'),
+  modeSeg: $('modeSeg'), animPill: $('animPill'), statsPill: $('statsPill'), traceBtn: $('traceBtn'), traceEvent: $('traceEvent'),
   play: $('play'), playLabel: $('playLabel'),
   chkLabels: $('chkLabels'), chkOutside: $('chkOutside'), resetCam: $('resetCam'),
   banner: $('banner'), tooltip: $('tooltip'), stage: $('stage'),
@@ -729,6 +729,7 @@ function syncModeUI() {
     b.setAttribute('aria-pressed', String(active));
   }
   dom.animPill.textContent = ui.mode === 'trace' ? 'langkah demi langkah' : 'awal → akhir';
+  dom.statsPill.textContent = ui.mode === 'trace' ? 'awal → langkah' : 'awal → akhir';
   dom.traceEvent.classList.toggle('hidden', ui.mode !== 'trace');
   if (ui.mode === 'trace') {
     const n = traceFrames().length;
