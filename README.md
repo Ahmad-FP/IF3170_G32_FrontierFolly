@@ -45,23 +45,48 @@ Perintah dijalankan dari masing-masing folder di dalam `src/` karena program mem
 | Notebook eksperimen HC (+ bonus urgency) | `cd src/hill_climbing && jupyter notebook main.ipynb` |
 | Simulated Annealing | `cd src/simulated_annealing && python sa.py` |
 | Genetic Algorithm | `cd src/genetic-algorithm && jupyter notebook main.ipynb` |
-| Uji constraint | `cd src/hill_climbing && python ../test_constraint.py` |
-| Uji initial state | `cd src && python test_initial_state.py` |
-| Uji hill climbing | `cd src/hill_climbing && python test_hill_climbing.py` |
 
-Hasil run ditulis ke `output/` (state `.json`, gambar `.png`, dan ringkasan `.json` per varian/run).
+Hasil run ditulis ke `output/` (state `.json`, gambar `.png`, dan ringkasan `.json` per varian/run). Validasi constraint untuk state hasil run ditampilkan sebagai badge awal/akhir di visualizer 3D.
 
 ## Visualizer 3D (Web)
 
-Folder `visualizer/` berisi viewer 3D berbasis three.js (tanpa build step, three.js sudah di-vendor) untuk menjelajahi hasil eksperimen: pilih algoritma + run, lihat state awal/akhir, animasi morph, statistik nilai/berat, badge validitas constraint (port dari `src/constraint.py`), dan keterangan paket saat hover (dimensi, value, berat, eta, fragile).
+Viewer three.js tanpa build step untuk menjelajahi state awal/akhir setiap run: animasi morph, statistik, validasi constraint (port dari `src/constraint.py`), dan detail paket. three.js dan font sudah di-vendor sehingga tidak butuh koneksi internet.
+
+### Menjalankan
 
 ```bash
-# jalankan dari root repo
+# dari root repo (bukan dari dalam folder visualizer/)
 python3 -m http.server 8123
-# lalu buka http://localhost:8123/visualizer/
 ```
 
-Sebuah berkas `*State.json` juga bisa di-drag & drop langsung ke area 3D untuk melihat state tunggal (tanpa server). URL bisa dibagikan, contoh: `http://localhost:8123/visualizer/?algo=random_restart&run=3`.
+Buka <http://localhost:8123/visualizer/>. Server harus dijalankan dari root repo karena viewer membaca state dari `../output/`.
+
+### Cara pakai
+
+1. **Pilih algoritma dan run** di panel kiri. Run 1–3 memakai seed yang sama dengan eksperimen.
+2. **Baca statistik** awal → akhir: nilai, skor objective, berat (bar terhadap kapasitas 500), jumlah paket, chip durasi/iterasi/stop reason, dan badge validitas constraint.
+3. **Animasi state**: geser slider, klik **Awal** / **Akhir**, atau **Putar morph**. Tombol yang sama berubah menjadi **Stop** saat animasi berjalan.
+4. **Warna paket**: pilih `Value`, `Berat`, atau `Fragile`. Di mode apa pun, label paket fragile diberi tanda merah `!`.
+5. **Detail paket**: hover untuk tooltip, klik paket untuk pin kartu detail di kiri bawah. Tutup dengan `Esc`, tombol ×, atau klik area kosong.
+6. **Kamera**: drag untuk memutar, scroll untuk zoom, klik kanan + drag untuk pan. **Reset kamera** mengembalikan view awal.
+7. **Label & paket di luar truk**: atur lewat toggle di kartu Tampilan. Paket yang tidak pernah termuat ditampilkan sebagai kolom pucat di samping truk.
+8. **Drag & drop** satu berkas `*State.json` ke area 3D untuk melihat state tunggal.
+
+### URL yang bisa dibagikan
+
+| Parameter | Nilai | Contoh |
+|---|---|---|
+| `algo` | `random_restart`, `steepest_ascent`, `stochastic`, `sideways_move`, `sa`, `bonus` | `?algo=sa` |
+| `run` | `1`, `2`, `3` | `?algo=sa&run=2` |
+| `t` | `0`–`1` (posisi morph) | `?t=0.5` |
+| `color` | `value`, `weight`, `fragile` | `?color=fragile` |
+| `select` | ID paket, mis. `A` | `?select=A` |
+
+Contoh: <http://localhost:8123/visualizer/?algo=random_restart&run=3&color=fragile>.
+
+Tampilan default: `random_restart` run 2 (nilai 2250).
+
+![Tampilan visualizer 3D](visualizer/preview.webp)
 
 ## Hasil Eksperimen (3 run)
 

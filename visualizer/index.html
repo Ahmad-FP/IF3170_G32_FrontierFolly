@@ -3,7 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#f5f7fb" />
   <title>Truck Packing 3D — IF3170 FrontierFolly</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preload" href="vendor/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="style.css" />
   <script type="importmap">
     { "imports": { "three": "./vendor/three.module.min.js" } }
@@ -11,68 +15,148 @@
 </head>
 <body>
   <aside id="panel">
-    <header id="head">
-      <h1>Truck Packing <span>3D</span></h1>
-      <p class="sub">IF3170 Inteligensi Artifisial · FrontierFolly — Hill Climbing &amp; Simulated Annealing</p>
+    <header class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6.5h10.5V17H3z" />
+          <path d="M13.5 10h4l3.5 3.5V17h-7.5" />
+          <circle cx="7" cy="18.5" r="1.6" />
+          <circle cx="17" cy="18.5" r="1.6" />
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Truck Packing <span>3D</span></h1>
+        <p>IF3170 Inteligensi Artifisial · FrontierFolly</p>
+      </div>
     </header>
 
     <section class="card">
-      <label for="algo">Algoritma</label>
-      <select id="algo"></select>
-      <div class="row">
-        <div class="grow">
-          <label for="run">Run (seed)</label>
-          <select id="run"></select>
-        </div>
-        <div class="grow">
-          <label for="colorMode">Warna paket</label>
-          <select id="colorMode">
-            <option value="value">Value</option>
-            <option value="weight">Berat</option>
-            <option value="fragile">Fragile</option>
-          </select>
+      <div class="field">
+        <label for="algo">Algoritma</label>
+        <div class="select-wrap">
+          <select id="algo"></select>
         </div>
       </div>
-      <div id="legend" class="legend"><span id="legendMin"></span><span id="legendMax"></span></div>
-      <p id="runPath" class="path"></p>
+
+      <div class="field">
+        <div class="label-row">
+          <span class="field-label" id="runGroupLabel">Run (seed)</span>
+          <span class="soft-pill" id="runLabel">run 2</span>
+        </div>
+        <div class="seg" id="runSeg" role="group" aria-labelledby="runGroupLabel">
+          <button type="button" data-run="1" aria-pressed="false">1</button>
+          <button type="button" data-run="2" aria-pressed="true">2</button>
+          <button type="button" data-run="3" aria-pressed="false">3</button>
+        </div>
+      </div>
+
+      <p id="runPath" class="path">output/…</p>
     </section>
 
     <section class="card">
-      <h2>Statistik</h2>
-      <div class="stat"><span>Nilai (value)</span><b id="stValue">–</b></div>
-      <div class="stat"><span>Skor objective</span><b id="stScore">–</b></div>
-      <div class="stat"><span>Berat</span><b id="stWeight">–</b></div>
-      <div class="stat"><span>Paket termuat</span><b id="stCount">–</b></div>
+      <div class="card-head">
+        <h2>Statistik</h2>
+        <span class="soft-pill">awal → akhir</span>
+      </div>
+
+      <dl class="stats">
+        <div class="stat"><dt>Nilai</dt><dd id="stValue">–</dd></div>
+        <div class="stat"><dt>Skor objective</dt><dd id="stScore">–</dd></div>
+        <div class="stat"><dt>Berat</dt><dd id="stWeight">–</dd></div>
+        <div class="stat"><dt>Paket termuat</dt><dd id="stCount">–</dd></div>
+      </dl>
+
+      <div class="bar" aria-hidden="true"><span id="weightBar"></span></div>
       <div class="chips" id="stExtras"></div>
       <div class="checks" id="stChecks"></div>
       <p class="foot">Batas atas subset (berat + volume, tanpa geometri): <b>2655</b></p>
     </section>
 
     <section class="card">
-      <h2>Animasi state awal → akhir</h2>
-      <div class="morphrow">
-        <input type="range" id="t" min="0" max="1" step="0.001" value="1" />
-        <span id="tLabel" class="badge">akhir</span>
+      <h2>Animasi state</h2>
+      <div class="morph-row">
+        <input type="range" id="t" min="0" max="1" step="0.001" value="1" aria-label="Posisi animasi state awal ke akhir" />
+        <span id="tLabel" class="soft-pill">akhir</span>
       </div>
-      <div class="btnrow">
-        <button id="btnInitial" type="button">Awal</button>
-        <button id="play" type="button" class="primary">▶ Putar morph</button>
-        <button id="btnFinal" type="button">Akhir</button>
+      <div class="btn-row">
+        <button id="btnInitial" class="btn" type="button">Awal</button>
+        <button id="play" class="btn btn-primary" type="button">
+          <svg class="ico ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z" /></svg>
+          <svg class="ico ico-stop" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>
+          <span id="playLabel">Putar morph</span>
+        </button>
+        <button id="btnFinal" class="btn" type="button">Akhir</button>
       </div>
-      <div class="btnrow checks-row">
-        <label class="check"><input type="checkbox" id="chkLabels" checked /> Label paket</label>
-        <label class="check"><input type="checkbox" id="chkOutside" checked /> Paket di luar truk</label>
-      </div>
-      <button id="resetCam" type="button" class="ghost">↺ Reset kamera</button>
     </section>
 
-    <p class="footnote">Data dibaca dari folder <code>output/</code>. Drag &amp; drop sebuah berkas <code>*State.json</code> ke area 3D untuk melihat state tunggal.</p>
+    <section class="card">
+      <h2>Tampilan</h2>
+
+      <div class="field">
+        <div class="label-row">
+          <span class="field-label" id="colorGroupLabel">Warna paket</span>
+        </div>
+        <div class="seg" id="colorSeg" role="group" aria-labelledby="colorGroupLabel">
+          <button type="button" data-mode="value" aria-pressed="true">Value</button>
+          <button type="button" data-mode="weight" aria-pressed="false">Berat</button>
+          <button type="button" data-mode="fragile" aria-pressed="false">Fragile</button>
+        </div>
+        <div id="legend" class="legend"><span id="legendMin"></span><span id="legendMax"></span></div>
+      </div>
+
+      <div class="toggles">
+        <label class="switch">
+          <span class="switch-text">Label paket</span>
+          <input type="checkbox" id="chkLabels" checked />
+          <span class="track" aria-hidden="true"></span>
+        </label>
+        <label class="switch">
+          <span class="switch-text">Paket di luar truk</span>
+          <input type="checkbox" id="chkOutside" checked />
+          <span class="track" aria-hidden="true"></span>
+        </label>
+      </div>
+
+      <button id="resetCam" class="btn btn-ghost" type="button">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 12a9 9 0 1 0 2.6-6.4" /><path d="M3 4v5h5" />
+        </svg>
+        Reset kamera
+      </button>
+    </section>
+
+    <p class="footnote">
+      Data dibaca dari folder <code>output/</code>. Drag &amp; drop sebuah berkas <code>*State.json</code>
+      ke area 3D untuk melihat state tunggal. Titik merah pada label menandai paket fragile.
+    </p>
   </aside>
 
   <main id="stage">
-    <div id="banner" class="hidden"></div>
-    <div id="tooltip" class="hidden"></div>
-    <div id="hint">Drag: putar · Scroll: zoom · Klik-kanan: geser</div>
+    <div class="stage-chip stage-top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 6.5h10.5V17H3z" /><path d="M13.5 10h4l3.5 3.5V17h-7.5" />
+        <circle cx="7" cy="18.5" r="1.6" /><circle cx="17" cy="18.5" r="1.6" />
+      </svg>
+      Truk 10 × 20 × 5
+    </div>
+
+    <div id="banner" class="hidden" role="alert"></div>
+
+    <div id="pinned" class="pinned hidden" role="region" aria-label="Detail paket terpilih">
+      <div class="pinned-head">
+        <span class="dot" id="pinnedDot" aria-hidden="true"></span>
+        <strong id="pinnedTitle">Paket</strong>
+        <span class="tag hidden" id="pinnedTag">Fragile</span>
+        <button id="pinnedClose" class="icon-btn" type="button" aria-label="Tutup detail paket">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </button>
+      </div>
+      <div id="pinnedBody" class="pinned-body"></div>
+    </div>
+
+    <div id="tooltip" class="hidden" role="tooltip"></div>
+
+    <div class="stage-chip stage-hint">Drag memutar · Scroll zoom · Klik paket untuk detail</div>
   </main>
 
   <script type="module" src="app.js"></script>
