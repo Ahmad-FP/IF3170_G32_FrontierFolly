@@ -45,6 +45,10 @@ Perintah dijalankan dari masing-masing folder di dalam `src/` karena program mem
 | Notebook eksperimen HC (+ bonus urgency) | `cd src/hill_climbing && jupyter notebook main.ipynb` |
 | Simulated Annealing | `cd src/simulated_annealing && python sa.py` |
 | Genetic Algorithm | `cd src/genetic-algorithm && jupyter notebook main.ipynb` |
+| Trace langkah demi langkah HC | `python src/trace/trace_hc.py` (dari root repo) |
+| Trace langkah demi langkah SA | `python src/trace/trace_sa.py` (dari root repo) |
+
+Skrip trace menulis `trace.json` ke folder run di `output/` (tanpa mengubah state/plot yang sudah ada). Trace HC merekam setiap langkah; trace SA mencontohkan langkah penerimaan (maks. ±600 frame) dengan nilai akhir yang tetap identik dengan `result.json`.
 
 Hasil run ditulis ke `output/` (state `.json`, gambar `.png`, dan ringkasan `.json` per varian/run). Validasi constraint untuk state hasil run ditampilkan sebagai badge awal/akhir di visualizer 3D.
 
@@ -65,7 +69,9 @@ Buka <http://localhost:8123/visualizer/>. Server harus dijalankan dari root repo
 
 1. **Pilih algoritma dan run** di panel kiri. Run 1–3 memakai seed yang sama dengan eksperimen.
 2. **Baca statistik** awal → akhir: nilai, skor objective, berat (bar terhadap kapasitas 500), jumlah paket, chip durasi/iterasi/stop reason, dan badge validitas constraint.
-3. **Animasi state**: geser slider, klik **Awal** / **Akhir**, atau **Putar morph**. Tombol yang sama berubah menjadi **Stop** saat animasi berjalan.
+3. **Animasi state**: dua mode di kartu *Animasi state*.
+   - **Morph**: geser slider, klik **Awal** / **Akhir**, atau **Putar morph** untuk transisi halus state awal → akhir.
+   - **Trace** (tersedia untuk Hill Climbing dan Simulated Annealing): geser slider atau **Putar trace** untuk mengikuti perjalanan pencarian langkah demi langkah — setiap frame menampilkan state 3D, nilai saat itu, dan penanda kejadian (perbaikan, *sideways move*, *restart* ke-N dengan nilai barunya, atau penerimaan solusi lebih buruk beserta suhu SA). Tombol yang sama berubah menjadi **Stop** saat animasi berjalan.
 4. **Warna paket**: pilih `Value`, `Berat`, atau `Fragile`. Di mode apa pun, label paket fragile diberi tanda merah `!`.
 5. **Detail paket**: hover untuk tooltip, klik paket untuk pin kartu detail di kiri bawah. Tutup dengan `Esc`, tombol ×, atau klik area kosong.
 6. **Kamera**: drag untuk memutar, scroll untuk zoom, klik kanan + drag untuk pan. **Reset kamera** mengembalikan view awal.

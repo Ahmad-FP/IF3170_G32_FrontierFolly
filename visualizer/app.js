@@ -13,11 +13,11 @@ const MAXV = Math.max(...IDS.map((id) => packages[id].value));
 const MAXW = Math.max(...IDS.map((id) => packages[id].weight));
 
 const ALGOS = [
-  { id: 'random_restart',  label: 'Hill Climbing — Random Restart',  base: '../output/hill_climbing/random_restart' },
-  { id: 'steepest_ascent', label: 'Hill Climbing — Steepest Ascent', base: '../output/hill_climbing/steepest_ascent' },
-  { id: 'stochastic',      label: 'Hill Climbing — Stochastic',      base: '../output/hill_climbing/stochastic' },
-  { id: 'sideways_move',   label: 'Hill Climbing — Sideways Move',   base: '../output/hill_climbing/sideways_move' },
-  { id: 'sa',              label: 'Simulated Annealing',             base: '../output/simulated_annealing' },
+  { id: 'random_restart',  label: 'Hill Climbing — Random Restart',  base: '../output/hill_climbing/random_restart', trace: true },
+  { id: 'steepest_ascent', label: 'Hill Climbing — Steepest Ascent', base: '../output/hill_climbing/steepest_ascent', trace: true },
+  { id: 'stochastic',      label: 'Hill Climbing — Stochastic',      base: '../output/hill_climbing/stochastic', trace: true },
+  { id: 'sideways_move',   label: 'Hill Climbing — Sideways Move',   base: '../output/hill_climbing/sideways_move', trace: true },
+  { id: 'sa',              label: 'Simulated Annealing',             base: '../output/simulated_annealing', trace: true },
   { id: 'ga_pop10_iter50',  label: 'Genetic Algorithm — Populasi 10, 50 Generasi',  base: '../output/genetic_algorithm/pop10_iter50',  runOffset: -1, result: false, pop: 10, generations: 50 },
   { id: 'ga_pop30_iter25',  label: 'Genetic Algorithm — Populasi 30, 25 Generasi',  base: '../output/genetic_algorithm/pop30_iter25',  runOffset: -1, result: false, pop: 30, generations: 25 },
   { id: 'ga_pop30_iter50',  label: 'Genetic Algorithm — Populasi 30, 50 Generasi',  base: '../output/genetic_algorithm/pop30_iter50',  runOffset: -1, result: false, pop: 30, generations: 50 },
@@ -36,6 +36,7 @@ const qsColor = qs.get('color');
 const ui = {
   algo: ALGOS.some((a) => a.id === qs.get('algo')) ? qs.get('algo') : 'random_restart',
   run: RUNS.includes(Number(qs.get('run'))) ? Number(qs.get('run')) : 2,
+  mode: 'morph',
   t: Number.isFinite(qsT) ? Math.min(1, Math.max(0, qsT)) : 1,
   colorMode: ['value', 'weight', 'fragile'].includes(qsColor) ? qsColor : 'value',
   labels: true,
@@ -49,6 +50,7 @@ const dom = {
   stValue: $('stValue'), stScore: $('stScore'), stWeight: $('stWeight'), stCount: $('stCount'),
   weightBar: $('weightBar'), stExtras: $('stExtras'), stChecks: $('stChecks'),
   t: $('t'), tLabel: $('tLabel'), btnInitial: $('btnInitial'), btnFinal: $('btnFinal'),
+  modeSeg: $('modeSeg'), animPill: $('animPill'), traceBtn: $('traceBtn'), traceEvent: $('traceEvent'),
   play: $('play'), playLabel: $('playLabel'),
   chkLabels: $('chkLabels'), chkOutside: $('chkOutside'), resetCam: $('resetCam'),
   banner: $('banner'), tooltip: $('tooltip'), stage: $('stage'),
@@ -58,6 +60,7 @@ const dom = {
 
 const runButtons = [...dom.runSeg.querySelectorAll('button')];
 const colorButtons = [...dom.colorSeg.querySelectorAll('button')];
+const modeButtons = [...dom.modeSeg.querySelectorAll('button')];
 
 let pendingSelect = qs.get('select');
 
@@ -276,6 +279,7 @@ let boxes = [];     // { id, group, a, b } — a/b = { pos, size } | null
 let outsideBoxes = [];
 let playState = null;
 let selectedId = null;
+let traceIndex = 0;
 
 function norm(saved) {
   const inside = {};
@@ -313,12 +317,14 @@ async function loadRun(algoId, run) {
   let initial;
   let final;
   let result;
+  let trace;
   try {
     [initial, final] = await Promise.all([
       getJson(`${base}/initialState.json`),
       getJson(`${base}/finalState.json`),
     ]);
     result = algo.result === false ? null : await getJson(`${base}/result.json`, false);
+    trace = algo.trace ? await getJson(`${base}/trace.json`, false) : null;
   } catch (err) {
     showBanner(`Gagal memuat <code>${base}</code>.<br>Jalankan lewat server lokal dari root repo, contoh:<br>`
       + '<code>cd IF3170_G32_FrontierFolly && python3 -m http.server 8123</code>, lalu buka <code>http://localhost:8123/visualizer/</code>.');
@@ -326,12 +332,15 @@ async function loadRun(algoId, run) {
   }
   stopPlay();
   clearSelection();
+  ui.mode = 'morph';
+  traceIndex = 0;
   if (!result && final.duration != null) {
     result = { duration: final.duration, pop_size: algo.pop, generations: algo.generations };
   }
-  runData = { base, initial: norm(initial), final: norm(final), result };
+  runData = { base, initial: norm(initial), final: norm(final), result, trace };
   buildScene();
   updatePanel();
+  syncModeUI();
 
   if (pendingSelect) {
     const id = pendingSelect;
@@ -350,6 +359,35 @@ function clearGroup(group) {
   }
 }
 
+function traceFrames() {
+  return runData?.trace?.frames ?? [];
+}
+
+function traceStateAt(index) {
+  const frames = traceFrames();
+  if (!frames.length) return null;
+  let i = Math.min(Math.max(0, index), frames.length - 1);
+  if (frames[i].kind === 'restart') {
+    let j = i + 1;
+    while (j < frames.length && frames[j].kind === 'restart') j += 1;
+    if (j >= frames.length) {
+      j = i - 1;
+      while (j >= 0 && frames[j].kind === 'restart') j -= 1;
+      j = Math.max(0, j);
+    }
+    i = j;
+  }
+  return norm(frames[i]);
+}
+
+function viewStates() {
+  if (ui.mode === 'trace' && runData?.trace) {
+    const state = traceStateAt(traceIndex);
+    return [state, state];
+  }
+  return [runData.initial, runData.final];
+}
+
 function buildScene() {
   clearGroup(boxGroup);
   clearGroup(outsideGroup);
@@ -357,8 +395,9 @@ function buildScene() {
   outsideBoxes = [];
   pickables.length = 0;
 
-  const ini = runData.initial.inside;
-  const fin = runData.final.inside;
+  const [iniState, finState] = viewStates();
+  const ini = iniState.inside;
+  const fin = finState.inside;
 
   for (const id of IDS) {
     const a = ini[id] ? { pos: [...ini[id].position], size: sizeOf(id, ini[id].orientation) } : null;
@@ -473,8 +512,9 @@ function setT(t, syncSlider = true) {
 
 function setPlayUI() {
   const playing = !!playState;
+  const trace = ui.mode === 'trace';
   dom.play.classList.toggle('playing', playing);
-  dom.playLabel.textContent = playing ? 'Stop' : 'Putar morph';
+  dom.playLabel.textContent = playing ? 'Stop' : trace ? 'Putar trace' : 'Putar morph';
 }
 
 function stopPlay() {
@@ -485,6 +525,12 @@ function stopPlay() {
 dom.play.addEventListener('click', () => {
   if (playState) {
     stopPlay();
+    return;
+  }
+  if (ui.mode === 'trace') {
+    if (traceIndex >= traceFrames().length - 1) setTraceIndex(0);
+    playState = { trace: true, last: performance.now() };
+    setPlayUI();
     return;
   }
   const from = ui.t >= 0.999 ? 0 : ui.t;
@@ -673,6 +719,104 @@ function updatePanel() {
   dom.chkOutside.checked = ui.outside;
 }
 
+function syncModeUI() {
+  const hasTrace = traceFrames().length > 0;
+  dom.traceBtn.disabled = !hasTrace;
+  dom.traceBtn.title = hasTrace ? 'Animasi langkah demi langkah dari trace eksperimen' : 'Trace belum tersedia untuk algoritma ini';
+  for (const b of modeButtons) {
+    const active = b.dataset.mode === ui.mode;
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-pressed', String(active));
+  }
+  dom.animPill.textContent = ui.mode === 'trace' ? 'langkah demi langkah' : 'awal → akhir';
+  dom.traceEvent.classList.toggle('hidden', ui.mode !== 'trace');
+  if (ui.mode === 'trace') {
+    const n = traceFrames().length;
+    dom.t.min = '0';
+    dom.t.max = String(Math.max(0, n - 1));
+    dom.t.step = '1';
+    dom.t.value = String(traceIndex);
+  } else {
+    dom.t.min = '0';
+    dom.t.max = '1';
+    dom.t.step = '0.001';
+    dom.t.value = String(ui.t);
+  }
+  setPlayUI();
+}
+
+function setMode(mode) {
+  if (mode === 'trace' && !traceFrames().length) return;
+  stopPlay();
+  clearSelection();
+  ui.mode = mode;
+  if (mode === 'trace') traceIndex = 0;
+  syncModeUI();
+  buildScene();
+  if (mode === 'trace') {
+    updateTracePanel();
+  } else {
+    setT(ui.t);
+    updatePanel();
+  }
+}
+
+function setTraceIndex(index) {
+  const n = traceFrames().length;
+  if (!n) return;
+  traceIndex = Math.max(0, Math.min(n - 1, Math.round(index)));
+  dom.t.value = String(traceIndex);
+  buildScene();
+  updateTracePanel();
+}
+
+function updateTracePanel() {
+  const frames = traceFrames();
+  if (!frames.length) return;
+  const firstState = frames.find((f) => f.kind !== 'restart');
+  const cur = traceStateAt(traceIndex);
+  const first = norm(firstState);
+  const si = statsOf(first);
+  const sf = statsOf(cur);
+  dom.runPath.textContent = runData.base.replace('../', '');
+  dom.runLabel.textContent = `run ${ui.run}`;
+
+  dom.stValue.innerHTML = `${fmt(si.value, 0)}<span class="arrow">→</span><b>${fmt(sf.value, 0)}</b>`;
+  dom.stScore.innerHTML = `${fmt(first.score ?? si.value)}<span class="arrow">→</span><b>${fmt(cur.score ?? sf.value)}</b>`;
+  dom.stWeight.innerHTML = `${fmt(si.weight, 0)}<span class="arrow">→</span><b>${fmt(sf.weight, 0)} / ${CAP}</b>`;
+  dom.stCount.innerHTML = `${si.count}<span class="arrow">→</span><b>${sf.count} / ${IDS.length}</b>`;
+  dom.weightBar.style.width = `${Math.min(100, (sf.weight / CAP) * 100)}%`;
+
+  const frame = frames[traceIndex];
+  const chips = [chip('repeat', `langkah ${traceIndex + 1}/${frames.length}`)];
+  if (frame.kind === 'restart') chips.push(chip('refresh', `restart #${frame.restart}`));
+  else if (frame.kind === 'sideways') chips.push(chip('arrowRight', 'sideways move'));
+  else if (frame.kind === 'initial') chips.push(chip('flag', 'state awal'));
+  if (frame.temp != null) chips.push(chip('refresh', `suhu ${fmt(frame.temp, 1)}`));
+  if (frame.delta != null) chips.push(chip('target', `Δ ${frame.delta > 0 ? '+' : ''}${fmt(frame.delta, 0)}`));
+  if (frame.value != null) chips.push(chip('seed', `nilai ${fmt(frame.value, 0)}`));
+  dom.stExtras.innerHTML = chips.join('');
+
+  const bad = Object.entries(checkState(fullState(cur))).filter(([, v]) => !v).map(([k]) => CHECK_LABELS[k]);
+  dom.stChecks.innerHTML = bad.length
+    ? `<span class="status-pill bad">${ICONS.alert}langkah: ${bad.join(', ')}</span>`
+    : `<span class="status-pill ok">${ICONS.check}langkah valid</span>`;
+
+  dom.tLabel.textContent = `${traceIndex + 1}/${frames.length}`;
+  dom.t.style.setProperty('--fill', `${frames.length > 1 ? (traceIndex / (frames.length - 1)) * 100 : 100}%`);
+  dom.traceEvent.textContent = frame.kind === 'restart'
+    ? `Restart #${frame.restart} — pencarian dimulai dari state awal baru.`
+    : frame.kind === 'sideways'
+      ? `Sideways move — nilai tetap ${fmt(frame.value, 0)}; plateau dieksplorasi.`
+      : frame.kind === 'initial'
+        ? `State awal — nilai ${fmt(frame.value, 0)}.`
+        : frame.delta != null
+          ? frame.delta > 0
+            ? `Terima solusi lebih baik — nilai ${fmt(frame.value, 0)} (Δ+${fmt(frame.delta, 0)}, suhu ${fmt(frame.temp, 1)}).`
+            : `Terima solusi lebih buruk — nilai ${fmt(frame.value, 0)} (Δ${fmt(frame.delta, 0)}, suhu ${fmt(frame.temp, 1)}).`
+          : `Perbaikan — nilai naik menjadi ${fmt(frame.value, 0)}.`;
+}
+
 function refreshEmissive() {
   for (const { id, group } of boxes) {
     const m = group.userData.mat;
@@ -692,13 +836,16 @@ function renderPinned() {
   if (!selectedId || !runData) return;
   const id = selectedId;
   const p = packages[id];
-  const inI = runData.initial.inside[id] || null;
-  const inF = runData.final.inside[id] || null;
-  const status = inI && inF
-    ? 'Termuat (awal & akhir)'
-    : inI
-      ? 'Keluar saat state akhir'
-      : 'Masuk saat state akhir';
+  const [iniState, finState] = viewStates();
+  const inI = iniState.inside[id] || null;
+  const inF = finState.inside[id] || null;
+  const status = ui.mode === 'trace'
+    ? (inF ? 'Termuat pada langkah ini' : 'Di luar truk pada langkah ini')
+    : inI && inF
+      ? 'Termuat (awal & akhir)'
+      : inI
+        ? 'Keluar saat state akhir'
+        : 'Masuk saat state akhir';
   const posEntry = inF || inI;
   const pos = posEntry ? `(${posEntry.position.join(', ')})` : '–';
 
@@ -711,7 +858,7 @@ function renderPinned() {
     <div class="pin-row"><span>Berat</span><b>${p.weight}</b></div>
     <div class="pin-row"><span>Eta (urgency)</span><b>${p.eta}</b></div>
     <div class="pin-row"><span>Status</span><b>${status}</b></div>
-    <div class="pin-row"><span>Posisi ${inF ? 'akhir' : 'awal'}</span><b>${pos}</b></div>`;
+    <div class="pin-row"><span>Posisi ${ui.mode === 'trace' ? 'langkah ini' : inF ? 'akhir' : 'awal'}</span><b>${pos}</b></div>`;
 }
 
 function selectPackage(id) {
@@ -782,14 +929,21 @@ function setHover(mesh, ev) {
 
   const id = mesh.userData.pkgId;
   const p = packages[id];
-  const inI = !!runData?.initial.inside[id];
-  const inF = !!runData?.final.inside[id];
-  const status = inI && inF
-    ? 'Termuat pada state awal & akhir'
-    : inI
-      ? 'Keluar saat state akhir'
-      : 'Masuk saat state akhir';
-  const near = ui.t < 0.5 ? (inI ? runData.initial.inside[id] : null) : (inF ? runData.final.inside[id] : null);
+  const [iniState, finState] = viewStates();
+  const inI = !!iniState.inside[id];
+  const inF = !!finState.inside[id];
+  const status = ui.mode === 'trace'
+    ? (inF ? 'Termuat pada langkah ini' : 'Di luar truk pada langkah ini')
+    : inI && inF
+      ? 'Termuat pada state awal & akhir'
+      : inI
+        ? 'Keluar saat state akhir'
+        : 'Masuk saat state akhir';
+  const near = ui.mode === 'trace'
+    ? (inF ? finState.inside[id] : null)
+    : ui.t < 0.5
+      ? (inI ? iniState.inside[id] : null)
+      : (inF ? finState.inside[id] : null);
   const posTxt = near ? `(${near.position.join(', ')})` : '–';
 
   dom.tooltip.innerHTML = `
@@ -801,7 +955,7 @@ function setHover(mesh, ev) {
     <div class="tt-row">Dimensi <b>${p.dimensions.join(' × ')}</b></div>
     <div class="tt-row">Value <b>${p.value}</b> · Berat <b>${p.weight}</b> · Eta <b>${p.eta}</b></div>
     <div class="tt-row">${status}</div>
-    <div class="tt-row">Posisi (${ui.t < 0.5 ? 'awal' : 'akhir'}) <b>${posTxt}</b></div>`;
+    <div class="tt-row">Posisi (${ui.mode === 'trace' ? 'langkah ini' : ui.t < 0.5 ? 'awal' : 'akhir'}) <b>${posTxt}</b></div>`;
   dom.tooltip.classList.remove('hidden');
 
   const stageRect = dom.stage.getBoundingClientRect();
@@ -872,11 +1026,32 @@ for (const b of colorButtons) {
 
 dom.t.addEventListener('input', () => {
   stopPlay();
+  if (ui.mode === 'trace') {
+    setTraceIndex(Number(dom.t.value));
+    return;
+  }
   setT(Number(dom.t.value));
 });
-dom.t.addEventListener('change', syncUrl);
-dom.btnInitial.addEventListener('click', () => { stopPlay(); setT(0); syncUrl(); });
-dom.btnFinal.addEventListener('click', () => { stopPlay(); setT(1); syncUrl(); });
+dom.t.addEventListener('change', () => { if (ui.mode === 'morph') syncUrl(); });
+dom.btnInitial.addEventListener('click', () => {
+  stopPlay();
+  if (ui.mode === 'trace') {
+    setTraceIndex(0);
+    return;
+  }
+  setT(0);
+  syncUrl();
+});
+dom.btnFinal.addEventListener('click', () => {
+  stopPlay();
+  if (ui.mode === 'trace') {
+    setTraceIndex(traceFrames().length - 1);
+    return;
+  }
+  setT(1);
+  syncUrl();
+});
+for (const b of modeButtons) b.addEventListener('click', () => setMode(b.dataset.mode));
 dom.chkLabels.addEventListener('change', () => {
   ui.labels = dom.chkLabels.checked;
   layout(ui.t);
@@ -901,9 +1076,12 @@ document.addEventListener('drop', async (ev) => {
     if (!saved.inside) throw new Error('bukan berkas state (tidak ada key "inside")');
     stopPlay();
     clearSelection();
-    runData = { base: file.name, initial: norm(saved), final: norm(saved), result: null };
+    ui.mode = 'morph';
+    traceIndex = 0;
+    runData = { base: file.name, initial: norm(saved), final: norm(saved), result: null, trace: null };
     buildScene();
     updatePanel();
+    syncModeUI();
     hideBanner();
   } catch (err) {
     showBanner(`File tidak bisa dibaca: ${err.message}`);
@@ -939,7 +1117,13 @@ function resize() {
 window.addEventListener('resize', resize);
 
 function animate(now) {
-  if (playState) {
+  if (playState?.trace) {
+    if (now - playState.last >= 220) {
+      playState.last = now;
+      if (traceIndex >= traceFrames().length - 1) stopPlay();
+      else setTraceIndex(traceIndex + 1);
+    }
+  } else if (playState) {
     const k = Math.min(1, (now - playState.start) / playState.dur);
     const e = k < 0.5 ? 2 * k * k : 1 - ((-2 * k + 2) ** 2) / 2; // easeInOutQuad
     setT(playState.from + (1 - playState.from) * e);

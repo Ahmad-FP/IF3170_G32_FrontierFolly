@@ -46,6 +46,23 @@ def rawValue(state, packages):
     )
 
 
+def traceFrame(state, packages, objective="value", kind="step", **extra):
+    return {
+        "kind": kind,
+        "value": stateScore(state, packages, objective),
+        "inside": {
+            package_id: {
+                "position": list(placement["position"]),
+                "orientation": list(placement["orientation"]),
+            }
+            for package_id, placement in state.items()
+            if placement["position"] is not None
+        },
+        "outside": [package_id for package_id, placement in state.items() if placement["position"] is None],
+        **extra,
+    }
+
+
 def fotokopi(state):
     return {k: dict(placement) for k, placement in state.items()}
 
@@ -361,7 +378,7 @@ def randomNeighbor(state, packages, truck, t=50):
     return None
 
 
-def steepestAscent(packages, truck, objective="value", maxIter=2000, seed=None):
+def steepestAscent(packages, truck, objective="value", maxIter=2000, seed=None, trace=None):
     if seed is not None:
         random.seed(seed)
 
@@ -372,6 +389,8 @@ def steepestAscent(packages, truck, objective="value", maxIter=2000, seed=None):
 
     values = [current_value]
     iterations = 0
+    if trace is not None:
+        trace.append(traceFrame(current, packages, objective, "initial"))
 
     while iterations < maxIter:
         best = bestImprovingMove(current, packages, truck, objective)
@@ -382,6 +401,8 @@ def steepestAscent(packages, truck, objective="value", maxIter=2000, seed=None):
         current_value = stateScore(current, packages, objective)
         values.append(current_value)
         iterations += 1
+        if trace is not None:
+            trace.append(traceFrame(current, packages, objective))
 
     return {
         "variant": "steepest_ascent",
@@ -398,7 +419,7 @@ def steepestAscent(packages, truck, objective="value", maxIter=2000, seed=None):
     }
 
 
-def stochastic(packages, truck, objective="value", trials=100, maxIter=2000, seed=None):
+def stochastic(packages, truck, objective="value", trials=100, maxIter=2000, seed=None, trace=None):
     if seed is not None:
         random.seed(seed)
 
@@ -410,6 +431,8 @@ def stochastic(packages, truck, objective="value", trials=100, maxIter=2000, see
     values = [current_value]
     iterations = 0
     total_attempts = 0
+    if trace is not None:
+        trace.append(traceFrame(current, packages, objective, "initial"))
 
     while iterations < maxIter:
         improved = False
@@ -424,6 +447,8 @@ def stochastic(packages, truck, objective="value", trials=100, maxIter=2000, see
                 values.append(current_value)
                 iterations += 1
                 improved = True
+                if trace is not None:
+                    trace.append(traceFrame(current, packages, objective))
                 break
         if not improved:
             break
@@ -445,7 +470,7 @@ def stochastic(packages, truck, objective="value", trials=100, maxIter=2000, see
     }
 
 
-def sidewaysMove(packages, truck, objective="value", maxSideways=100, maxIter=2000, seed=None):
+def sidewaysMove(packages, truck, objective="value", maxSideways=100, maxIter=2000, seed=None, trace=None):
     if seed is not None:
         random.seed(seed)
 
@@ -459,6 +484,8 @@ def sidewaysMove(packages, truck, objective="value", maxSideways=100, maxIter=20
     sideways_total = 0
     previous_key = None
     stopped_by = "no_move"
+    if trace is not None:
+        trace.append(traceFrame(current, packages, objective, "initial"))
 
     while iterations < maxIter:
         best = bestImprovingMove(current, packages, truck, objective)
@@ -469,6 +496,8 @@ def sidewaysMove(packages, truck, objective="value", maxSideways=100, maxIter=20
             current_value = stateScore(current, packages, objective)
             values.append(current_value)
             iterations += 1
+            if trace is not None:
+                trace.append(traceFrame(current, packages, objective))
             continue
 
         if sideways_total >= maxSideways:
@@ -485,6 +514,8 @@ def sidewaysMove(packages, truck, objective="value", maxSideways=100, maxIter=20
         values.append(current_value)
         iterations += 1
         sideways_total += 1
+        if trace is not None:
+            trace.append(traceFrame(current, packages, objective, "sideways"))
 
     return {
         "variant": "sideways_move",
@@ -504,7 +535,7 @@ def sidewaysMove(packages, truck, objective="value", maxSideways=100, maxIter=20
     }
 
 
-def randomRestart(packages, truck, objective="value", maxRestart=5, maxIterPerRestart=2000, seed=None):
+def randomRestart(packages, truck, objective="value", maxRestart=5, maxIterPerRestart=2000, seed=None, trace=None):
     if seed is not None:
         random.seed(seed)
 
@@ -519,7 +550,9 @@ def randomRestart(packages, truck, objective="value", maxRestart=5, maxIterPerRe
 
     while restarts < maxRestart:
         # seed=None: tiap restart mengambil initial state random baru dari RNG global
-        result = steepestAscent(packages, truck, objective, maxIter=maxIterPerRestart, seed=None)
+        if trace is not None:
+            trace.append({"kind": "restart", "restart": restarts + 1})
+        result = steepestAscent(packages, truck, objective, maxIter=maxIterPerRestart, seed=None, trace=trace)
         if first_initial is None:
             first_initial = result["initial"]
         restarts += 1

@@ -73,11 +73,19 @@
     </section>
 
     <section class="card">
-      <h2>Animasi state</h2>
+      <div class="card-head">
+        <h2>Animasi state</h2>
+        <span class="soft-pill" id="animPill">awal → akhir</span>
+      </div>
+      <div class="seg mode-seg" id="modeSeg" role="group" aria-label="Mode animasi">
+        <button type="button" data-mode="morph" aria-pressed="true">Morph</button>
+        <button type="button" data-mode="trace" aria-pressed="false" id="traceBtn" disabled>Trace</button>
+      </div>
       <div class="morph-row">
         <input type="range" id="t" min="0" max="1" step="0.001" value="1" aria-label="Posisi animasi state awal ke akhir" />
         <span id="tLabel" class="soft-pill">akhir</span>
       </div>
+      <p id="traceEvent" class="trace-event hidden"></p>
       <div class="btn-row">
         <button id="btnInitial" class="btn" type="button">Awal</button>
         <button id="play" class="btn btn-primary" type="button">
