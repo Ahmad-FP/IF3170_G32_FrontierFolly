@@ -105,7 +105,6 @@ def roulette_selection(population, packages, truck):
     cum_probability = 0
 
     for i in range(len(population)):
-        # Probability individu
         probability = (fitness_value[i] / total_fitness) * 100
 
         cum_probability += probability
@@ -394,4 +393,4 @@ def genetic_algorithm(packages, truck, pop_size, max_iter, mutation_rate=0.1):
         history_curr_best.append(curr_best_fitness)
         history_avg.append(sum(fitness_values) / pop_size)
 
-    return initial_chromosome_random, best_chromosome, history_best, history_curr_best, history_avg # Mengembalikan kromosom terbaik, history dari fitness terbaik, dan history dari rata-rata fitness
+    return initial_chromosome_random, best_chromosome, history_best, history_curr_best, history_avg 
